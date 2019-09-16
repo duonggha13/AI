@@ -288,6 +288,8 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.visualize = True
+        self._visited, self._visitedlist = {}, []
 
     def getStartState(self):
         """
@@ -295,6 +297,7 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        return(self.startingPosition,self.corners)
         util.raiseNotDefined()
 
     def isGoalState(self, state):
@@ -302,6 +305,7 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+        return len(state[1]) == 0
         util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -325,7 +329,13 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-
+            position, corners = state
+            x, y = position
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                corners = list(corner for corner in corners if corner!=(nextx, nexty))
+                successors.append((((nextx, nexty), corners), action, 1))
         self._expanded += 1 # DO NOT CHANGE
         return successors
 
@@ -360,7 +370,16 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    position, corners = state
+    (x, y) = position
+    heur = 0
+    if not walls[x][y]:
+        for corner in corners:
+            heur = max(heur,((abs(x-corner[0]) + abs(y-corner[1]))))
+    else:
+        return 999999
+
+    return heur # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -454,7 +473,11 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    foods = foodGrid.asList()
+    fHeur = 0
+    for food in foods:
+        fHeur = max(fHeur,mazeDistance(position,food,problem.startingGameState))
+    return fHeur
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -485,6 +508,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
+        return search.bfs(problem)
         util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -521,6 +545,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
+        return self.food[x][y]
         util.raiseNotDefined()
 
 def mazeDistance(point1, point2, gameState):

@@ -90,7 +90,7 @@ def depthFirstSearch(problem):
     stack = util.Stack()
     searched = list()
     stack.push((problem.getStartState(),[]))
-    while True:
+    while not stack.isEmpty():
         node = stack.pop()
         if (node[0] in searched):
             continue
@@ -107,7 +107,7 @@ def breadthFirstSearch(problem):
     queue = util.Queue()
     searched = list()
     queue.push((problem.getStartState(),[]))
-    while True:
+    while not queue.isEmpty():
         node = queue.pop()
         if (node[0] in searched):
             continue
@@ -124,7 +124,7 @@ def uniformCostSearch(problem):
     pQueue = util.PriorityQueue()
     searched = list()
     pQueue.push((problem.getStartState(),[]),0)
-    while True:
+    while not pQueue.isEmpty():
         node = pQueue.pop()
         if(node[0] in searched):
             continue
@@ -148,7 +148,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     pQueue = util.PriorityQueue()
     searched = list()
     pQueue.push((problem.getStartState(),[]),0)
-    while True:
+    while not pQueue.isEmpty():
         node = pQueue.pop()
         if(node[0] in searched):
             continue
