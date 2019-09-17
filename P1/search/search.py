@@ -92,13 +92,13 @@ def depthFirstSearch(problem):
     stack.push((problem.getStartState(),[]))
     while not stack.isEmpty():
         node = stack.pop()
-        if (node[0] in searched):
-            continue
-        searched.append(node[0])
-        if(problem.isGoalState(node[0])):
-            return node[1]
-        for successor in problem.getSuccessors(node[0]):
-            stack.push((successor[0], node[1] + [successor[1]]))
+        if (node[0] not in searched):
+            #continue
+            searched.append(node[0])
+            if(problem.isGoalState(node[0])):
+                return node[1]
+            for successor in problem.getSuccessors(node[0]):
+                stack.push((successor[0], node[1] + [successor[1]]))
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
@@ -109,12 +109,11 @@ def breadthFirstSearch(problem):
     queue.push((problem.getStartState(),[]))
     while not queue.isEmpty():
         node = queue.pop()
-        if (node[0] in searched):
-            continue
-        searched.append(node[0])
-        if(problem.isGoalState(node[0])):
-            return node[1]
-        for successor in problem.getSuccessors(node[0]):
+        if (node[0] not in searched):
+            searched.append(node[0])
+            if(problem.isGoalState(node[0])):
+                return node[1]
+            for successor in problem.getSuccessors(node[0]):
                 queue.push((successor[0], node[1] + [successor[1]]))
     util.raiseNotDefined()
 
@@ -126,13 +125,12 @@ def uniformCostSearch(problem):
     pQueue.push((problem.getStartState(),[]),0)
     while not pQueue.isEmpty():
         node = pQueue.pop()
-        if(node[0] in searched):
-            continue
-        searched.append(node[0])
-        if(problem.isGoalState(node[0])):
-            return node[1]
-        for state, action, stepCost in problem.getSuccessors(node[0]):
-            pQueue.push((state, node[1] + [action]), stepCost + problem.getCostOfActions(node[1]))
+        if(node[0] not in searched):
+            searched.append(node[0])
+            if(problem.isGoalState(node[0])):
+                return node[1]
+            for state, action, stepCost in problem.getSuccessors(node[0]):
+                pQueue.push((state, node[1] + [action]), stepCost + problem.getCostOfActions(node[1]))
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -150,13 +148,12 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     pQueue.push((problem.getStartState(),[]),0)
     while not pQueue.isEmpty():
         node = pQueue.pop()
-        if(node[0] in searched):
-            continue
-        searched.append(node[0])
-        if(problem.isGoalState(node[0])):
-            return node[1]
-        for state, action, stepCost in problem.getSuccessors(node[0]):
-            pQueue.push((state, node[1] + [action]), stepCost + problem.getCostOfActions(node[1]) + heuristic(state,problem))
+        if(node[0] not in searched):
+            searched.append(node[0])
+            if(problem.isGoalState(node[0])):
+                return node[1]
+            for state, action, stepCost in problem.getSuccessors(node[0]):
+                pQueue.push((state, node[1] + [action]), stepCost + problem.getCostOfActions(node[1]) + heuristic(state,problem))
     util.raiseNotDefined()
 
 
