@@ -82,7 +82,7 @@ class ReflexAgent(Agent):
         
         for ghostState in newGhostStates:
             if (ghostState.getPosition() == newPos) and (ghostState.scaredTimer == 0):
-                return -10000 
+                return -10000
         
         for food in foodList:
             if distance < -(manhattanDistance(food, newPos)):
@@ -212,7 +212,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         value = - float('inf')
         alpha = - float('inf')
         beta = float('inf')
-        optimalAction = Directions.STOP
+        bestAction = Directions.STOP
         for action in gameState.getLegalActions(0):
           nextValue = minvalue(gameState.generateSuccessor(0, action), alpha, beta, 1, 0)
           if nextValue > value:
@@ -234,7 +234,36 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def exvalue(state, depth, agentindex):
+          if state.isWin() or state.isLose() or depth == self.depth:
+            return self.evaluationFunction(state)
+          else:
+            value = 0
+            for action in state.getLegalActions(agentindex):
+              if agentindex == state.getNumAgents() - 1:
+                value += maxvalue(state.generateSuccessor(agentindex, action), depth + 1)
+              else:
+                value += exvalue(state.generateSuccessor(agentindex, action), depth, agentindex + 1)
+            return value
+
+        def maxvalue(state, depth):
+          if state.isWin() or state.isLose() or depth == self.depth:
+            return self.evaluationFunction(state)
+          else:
+            value = - float('inf')
+            for action in state.getLegalActions(0):
+              value = max(value, exvalue(state.generateSuccessor(0, action), depth, 1))
+            return value
+
+        maxValue = - float('inf')
+        bestAction = None
+
+        for action in gameState.getLegalActions(0):
+          nextValue = exvalue(gameState.generateSuccessor(0, action), 0, 1)
+          if nextValue > maxValue:
+            maxValue = nextValue
+            bestAction = action
+        return bestAction
 
 def betterEvaluationFunction(currentGameState):
     """
@@ -244,6 +273,21 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
+    foodPos = currentGameState.getFood().asList() 
+    foodDist = 0
+    ghostDist = 0
+    ghostStates = currentGameState.getGhostStates()
+    currentPos = list(currentGameState.getPacmanPosition()) 
+
+    for ghost in ghostStates:
+      if ghost.scaredTimer == 0:
+        ghostDist = max(ghostDist, manhattanDistance(ghost.getPosition(), currentPos))
+ 
+    for food in foodPos:
+        foodDist = max(foodDist, manhattanDistance(food, currentPos))
+
+    return foodDist - 5*ghostDist + currentGameState.getScore()
+
     util.raiseNotDefined()
 
 # Abbreviation
