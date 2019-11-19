@@ -72,16 +72,20 @@ def enhancedFeatureExtractorDigit(datum):
     for this datum (datum is of type samples.Datum).
 
     ## DESCRIBE YOUR ENHANCED FEATURES HERE...
-
+        - vertical and horizontal in bound test
+        - finding neighbors 
     ##
     """
-    features =  basicFeatureExtractorDigit(datum)
-
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
-    return features
-
+    features =  basicFeatureExtractorDigit(datum)
+    
+    for x in range(DIGIT_DATUM_WIDTH):
+        for y in range(DIGIT_DATUM_HEIGHT):
+            if (datum.getPixel(x, y) > datum.getPixel(x, y - 1) ):
+                features[(x, y, 0)] = 1
+            else:
+                features[(x, y, 0)] = 0
+    return features 
 
 
 def basicFeatureExtractorPacman(state):
@@ -124,10 +128,31 @@ def enhancedPacmanFeatures(state, action):
     """
     features = util.Counter()
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    state = state.generateSuccessor(0,action)
+    foods = state.getFood().asList()
+    pacmanPos = state.getPacmanPosition()
+    minD = 10000
+
+    for food in foods:
+        d = util.manhattanDistance(food,pacmanPos)
+        minD = min(d,minD)
+    if minD != 10000:
+        features["closest food"] = 1.0/minD
+    else:
+        features["closest food"] = 1
+
+    if features["closest food"]== 0:
+        pdb.set_trace()
+
+
+    minD = 10000000000
+    for ghost in state.getGhostPositions():
+        d = util.manhattanDistance(pacmanPos,ghost) 
+        minD = min(d,minD)
+
+    features["closest ghost"] = minD
+
     return features
-
-
 def contestFeatureExtractorDigit(datum):
     """
     Specify features to use for the minicontest

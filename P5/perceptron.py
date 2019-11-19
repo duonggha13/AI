@@ -46,17 +46,21 @@ class PerceptronClassifier:
         datum is a counter from features to values for those features
         (and thus represents a vector a values).
         """
-
+        
         self.features = trainingData[0].keys() # could be useful later
         # DO NOT ZERO OUT YOUR WEIGHTS BEFORE STARTING TRAINING, OR
         # THE AUTOGRADER WILL LIKELY DEDUCT POINTS.
 
         for iteration in range(self.max_iterations):
             print "Starting iteration ", iteration, "..."
-            for i in range(len(trainingData)):
-                "*** YOUR CODE HERE ***"
-                util.raiseNotDefined()
 
+            "*** YOUR CODE HERE ***"
+            for i,d in enumerate(trainingData):
+                actual = trainingLabels[i]
+                prediction = self.classify([d])[0]
+                if actual != prediction:
+                    self.weights[actual] = self.weights[actual] + d
+                    self.weights[prediction] = self.weights[prediction] - d
     def classify(self, data ):
         """
         Classifies each datum as the label that most closely matches the prototype vector
@@ -80,6 +84,8 @@ class PerceptronClassifier:
         featuresWeights = []
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        wy = self.weights[label]
+        wy = sorted( [(v,k) for k,v in wy.items()], reverse=True )
+        featuresWeights = [e[1] for e in wy[:100]]
 
         return featuresWeights
